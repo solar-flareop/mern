@@ -1,11 +1,14 @@
+import { toast } from "react-toastify";
 import axios from "axios";
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
 
 // date fns
-// import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
+
+  const deleteNotify = () => toast.success("Task deleted successfully!");
 
   const handleClick = async () => {
     const { data } = await axios.delete(
@@ -25,15 +28,19 @@ const WorkoutDetails = ({ workout }) => {
         <strong>Number of reps: </strong>
         {workout.reps}
       </p>
-      <p>{workout.createdAt}</p>
-      <p>{workout._id}</p>
-      <span onClick={handleClick}>Delete</span>
-      {/* <p>
+      <span
+        className="material-symbols-outlined"
+        onClick={() => {
+          handleClick();
+          deleteNotify();
+        }}
+      >
+        Delete
+      </span>
+
+      <p>
         {formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}
-      </p> */}
-      {/* <span className="material-symbols-outlined" onClick={handleClick}>
-        delete
-      </span> */}
+      </p>
     </div>
   );
 };
