@@ -1,19 +1,29 @@
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 // date fns
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
-
-  const deleteNotify = () => toast.success("Task deleted successfully!");
+  const { user } = useAuthContext();
 
   const handleClick = async () => {
+    if (!user) {
+      setError("You must be logged in");
+      return;
+    }
     const { data } = await axios.delete(
-      `http://localhost:5000/api/workouts/${workout._id}`
+      `http://localhost:5000/api/workouts/${workout._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
     );
+    toast.success("Task deleted successfully!");
     dispatch({ type: "DELETE_WORKOUT", payload: data });
   };
 
@@ -28,13 +38,7 @@ const WorkoutDetails = ({ workout }) => {
         <strong>Number of reps: </strong>
         {workout.reps}
       </p>
-      <span
-        className="material-symbols-outlined"
-        onClick={() => {
-          handleClick();
-          deleteNotify();
-        }}
-      >
+      <span className="material-symbols-outlined" onClick={handleClick}>
         Delete
       </span>
 
